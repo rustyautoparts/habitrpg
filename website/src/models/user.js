@@ -428,10 +428,6 @@ UserSchema.methods.toJSON = function() {
   // FIXME? Is this a reference to `doc.filters` or just disabled code? Remove?
   doc.filters = {};
   doc._tmp = this._tmp; // be sure to send down drop notifs
-  var self = this;
-  _.each(['habits', 'dailys', 'todos', 'rewards'], function(t){ // keep our custom task properties
-    doc[t] = self[t];
-  })
 
   return doc;
 };
@@ -469,8 +465,6 @@ UserSchema.pre('save', function(next) {
       return tag;
     }));
   }
-
-  self.validateTasks();
 
   //this.markModified('tasks');
   if (_.isNaN(this.preferences.dayStart) || this.preferences.dayStart < 0 || this.preferences.dayStart > 23) {

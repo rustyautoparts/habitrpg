@@ -61,18 +61,25 @@ api.get = function(req, res, next) {
   // 1) Find the sum of users.tasks.values within the challnege (eg, {'profile.name':'tyler', 'sum': 100})
   // 2) Sort by the sum
   // 3) Limit 30 (only show the 30 users currently in the lead)
-  Challenge.findById(req.params.cid)
-    .populate('members', 'profile.name _id')
-    .populate('group', '_id name type')
-    .populate('leader', 'profile.name')
-    .exec(function(err, challenge){
-      if(err) return next(err);
-      if (!challenge) return res.json(404, {err: 'Challenge ' + req.params.cid + ' not found'});
-      challenge._isMember = !!(_.find(challenge.members, function(member) {
-        return member._id === user._id;
-      }));
-      res.json(challenge);
-    });
+  async.waterfall([
+    function(cb){
+      Challenge.findById(req.params.cid)
+        .populate('members', 'profile.name _id')
+        .populate('group', '_id name type')
+        .populate('leader', 'profile.name')
+        .exec(cb);
+    },
+    function(challenge, cb){
+      challenge.populateTasks(cb);
+    }
+  ], function(err, challenge){
+    if(err) return next(err);
+    if (!challenge) return res.json(404, {err: 'Challenge ' + req.params.cid + ' not found'});
+    challenge._isMember = !!(_.find(challenge.members, function(member) {
+      return member._id === user._id;
+    }));
+    res.json(challenge);
+  })
 }
 
 api.csv = function(req, res, next) {
@@ -195,6 +202,7 @@ api.create = function(req, res, next){
       req.body.leader = user._id;
       req.body.official = user.contributor.admin && req.body.official;
       var chal = new Challenge(req.body); // FIXME sanitize
+      _.merge( chal, _.pick( req.body, 'habits dailys todos rewards'.split(' ') ) );
       chal.members.push(user._id);
       chal.save(cb);
     }],

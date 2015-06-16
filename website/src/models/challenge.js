@@ -2,7 +2,7 @@ var mongoose = require("mongoose");
 var Schema = mongoose.Schema;
 var shared = require('../../../common');
 var _ = require('lodash');
-var TaskSchemas = require('./task');
+var plugins = require('./plugins');
 
 var ChallengeSchema = new Schema({
   _id: {type: String, 'default': shared.uuid},
@@ -16,12 +16,6 @@ var ChallengeSchema = new Schema({
   members: [{type: String, ref: 'User'}],
   memberCount: {type: Number, 'default': 0},
   prize: {type: Number, 'default': 0}
-});
-
-ChallengeSchema.virtual('tasks').get(function () {
-  var tasks = this.habits.concat(this.dailys).concat(this.todos).concat(this.rewards);
-  var tasks = _.object(_.pluck(tasks,'id'), tasks);
-  return tasks;
 });
 
 ChallengeSchema.methods.toJSON = function(){
@@ -65,6 +59,7 @@ ChallengeSchema.methods.isOutdated = function(newData) {
  * @return nothing, user is modified directly. REMEMBER to save the user!
  */
 ChallengeSchema.methods.syncToUser = function(user, cb) {
+  return;
   if (!user) return;
   var self = this;
   self.shortName = self.shortName || self.name;
@@ -111,6 +106,7 @@ ChallengeSchema.methods.syncToUser = function(user, cb) {
   user.save(cb);
 };
 
+plugins.taskHelpers(ChallengeSchema, 'Challenge');
 
 module.exports.schema = ChallengeSchema;
 module.exports.model = mongoose.model("Challenge", ChallengeSchema);
