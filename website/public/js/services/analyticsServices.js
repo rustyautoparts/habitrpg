@@ -53,10 +53,10 @@ function analyticsFactory(User) {
   function track(properties) {
     var REQUIRED_FIELDS = ['hitType','eventCategory','eventAction'];
     var ALLOWED_HIT_TYPES = ['pageview','screenview','event','transaction','item','social','exception','timing'];
-    if (_.pick(properties, REQUIRED_FIELDS).length !== REQUIRED_FIELDS.length) {
-      return console.log('Analytics calls must include the following properties: ' + JSON.stringify(REQUIRED_FIELDS));
+    if (!_.isEqual(_.keys(_.pick(properties, REQUIRED_FIELDS)), REQUIRED_FIELDS)) {
+      return console.log('Analytics tracking calls must include the following properties: ' + JSON.stringify(REQUIRED_FIELDS));
     }
-    if (!_.includes(ALLOWED_HIT_TYPES, properties.hitType)) {
+    if (!_.contains(ALLOWED_HIT_TYPES, properties.hitType)) {
       return console.log('Hit type of Analytics event must be one of the following: ' + JSON.stringify(ALLOWED_HIT_TYPES));
     }
 
