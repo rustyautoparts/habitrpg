@@ -26,5 +26,6 @@ website/public/docs
 coverage
 coverage.html
 common/dist/scripts/habitrpg-shared.js
+dist/images/*
 
 test/spec/mocks/translations.js

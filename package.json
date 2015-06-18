@@ -92,6 +92,8 @@
     "event-stream": "^3.2.2",
     "expect.js": "~0.2.0",
     "glob": "^4.3.5",
+    "gulp-awspublish": "^2.0.2",
+    "gulp-flatten": "0.0.4",
     "istanbul": "^0.3.14",
     "karma": "~0.10.2",
     "karma-chai-plugins": "~0.1.0",
